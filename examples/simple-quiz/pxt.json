@@ -1,0 +1,13 @@
+{
+    "name": "simple-quiz",
+    "version": "0.0.0",
+    "description": "QuizBlocks demo: a minimal A-or-B quiz game.",
+    "files": [
+        "main.ts"
+    ],
+    "dependencies": {
+        "device": "*",
+        "quizblocks": "github:YOUR_GITHUB_USERNAME/pxt-quizblocks"
+    },
+    "public": false
+}

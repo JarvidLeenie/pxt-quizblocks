@@ -1,0 +1,20 @@
+{
+    "name": "quizblocks",
+    "version": "0.0.1",
+    "description": "Turn any MakeCode Arcade game into an educational quiz game with a few simple blocks.",
+    "files": [
+        "main.ts"
+    ],
+    "testFiles": [
+        "test.ts"
+    ],
+    "dependencies": {
+        "device": "*"
+    },
+    "public": true,
+    "target": "arcade",
+    "supportedTargets": [
+        "arcade"
+    ],
+    "license": "MIT"
+}

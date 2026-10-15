@@ -1,0 +1,13 @@
+{
+    "name": "space-invaders-quiz",
+    "version": "0.0.0",
+    "description": "QuizBlocks demo: a Space Invaders style quiz game.",
+    "files": [
+        "main.ts"
+    ],
+    "dependencies": {
+        "device": "*",
+        "quizblocks": "github:YOUR_GITHUB_USERNAME/pxt-quizblocks"
+    },
+    "public": false
+}
