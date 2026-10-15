@@ -43,7 +43,10 @@ function spawnEnemies() {
         const enemy = sprites.create(enemyImage, SpriteKind.Enemy)
         enemy.data["choiceIndex"] = i
         enemy.setPosition(20 + i * 28, 20)
-        enemy.sayText(choices[i], 0)
+        // No timeOnScreen argument: passing 0 sets the bubble's expiry to
+        // "now," so it disappears almost immediately. Omitting it leaves
+        // the label on screen indefinitely, until the sprite is destroyed.
+        enemy.sayText(choices[i])
         enemies.push(enemy)
     }
 }

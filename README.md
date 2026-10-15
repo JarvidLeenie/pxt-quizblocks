@@ -137,11 +137,17 @@ runnable code. In short:
 ```ts
 quiz.setNumberOfChoices(2)
 
-quiz.onNewQuestion(function () {
-    // redraw question() and choice(0)/choice(1)
-})
 quiz.onCorrect(function () { info.changeScoreBy(1) })
 quiz.onIncorrect(function () { info.changeLifeBy(-1) })
+
+// game.onPaint runs every frame, before sprites, after the background.
+// Read the current question/choices fresh each frame.
+game.onPaint(function () {
+    screen.fill(15)
+    screen.print(quiz.question(), 4, 4, 1)
+    screen.print("A) " + quiz.choice(0), 4, 40, 1)
+    screen.print("B) " + quiz.choice(1), 4, 56, 1)
+})
 
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
     quiz.submitChoice(0)
@@ -151,10 +157,18 @@ controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
 })
 ```
 
-Use a non-blocking draw call (like `screen.print`) inside `onNewQuestion`,
-not a modal dialog - otherwise button presses can't be handled while it's
-open. See the example's [README](./examples/simple-quiz/README.md) for
-step-by-step import instructions.
+Use a non-blocking, every-frame draw call (`screen.print` inside
+`game.onPaint`), not a modal dialog and not a one-shot `screen.print`
+called only from `onNewQuestion`. A modal dialog would block A/B input
+while it's open; a one-shot draw gets erased, because MakeCode Arcade
+redraws the background every frame regardless of whether anything
+changed, so a draw that only happens once (e.g. only inside
+`onNewQuestion`) disappears on the very next frame. `onNewQuestion` is
+still useful here - the example uses it to clear a "Correct!"/"Try again!"
+feedback message - just don't make it the only place you draw the
+question itself. See the example's
+[README](./examples/simple-quiz/README.md) for step-by-step import
+instructions.
 
 ## Building the Space Invaders example
 
@@ -231,9 +245,21 @@ a QuizBlocks issue).
   expected in Blocks (not just that the TypeScript compiles). To do this
   yourself: create a project, add the extension via its GitHub URL (see
   **Install** above), and check the **QuizBlocks** category.
-- Running the two example games in the simulator/on real input to confirm
-  look and feel (both examples compiled cleanly, but weren't play-tested in
-  a running simulator in this environment).
+
+Compiling cleanly is not the same as working correctly in the simulator -
+both examples initially had real rendering bugs that only showed up when
+actually run in the browser, and were only caught once a person ran them:
+`screen.print()` called once from `onNewQuestion` got silently erased by
+the engine's own per-frame background redraw (fixed by moving drawing into
+`game.onPaint`, which runs every frame), and `sprite.sayText(text, 0)`
+made the `0` set the speech bubble's expiry to "now," so it vanished
+almost immediately (fixed by omitting the argument). Both fixes are
+reflected in the example code and the "Building the simple A/B quiz"
+section above, and were re-verified with `pxt build` against the real
+target afterward - but since neither example has been run in an actual
+simulator by this process (only compiled), treat them as compiling
+correctly and logically reviewed, not as confirmed bug-free until you've
+run them yourself.
 
 ## Publishing a release
 
