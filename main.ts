@@ -210,6 +210,30 @@ namespace quiz {
     // engine behavior (the same hook game code uses for per-frame logic),
     // not an arbitrary delay.
     let hasFiredInitialQuestion = false;
+    let newQuestionQueued = false;
+
+    // Show the question after submit returns. show long text / ask for number
+    // freeze if opened from inside the dialog that just submitted an answer,
+    // and a submit inside that handler would be ignored while `submitting`
+    // is still true.
+    function queueNewQuestion() {
+        hasFiredInitialQuestion = true;
+        if (newQuestionQueued) {
+            return;
+        }
+        newQuestionQueued = true;
+        if (typeof control != "undefined" && control.runInParallel) {
+            control.runInParallel(function () {
+                pause(1);
+                newQuestionQueued = false;
+                fireHandlers(newQuestionHandlers);
+            });
+        } else {
+            newQuestionQueued = false;
+            fireHandlers(newQuestionHandlers);
+        }
+    }
+
     game.onUpdate(function () {
         if (!hasFiredInitialQuestion) {
             hasFiredInitialQuestion = true;
@@ -350,11 +374,12 @@ namespace quiz {
      *   as incorrect and does not advance the question.
      * - Otherwise, fires onCorrect() or onIncorrect() (while question(),
      *   choices(), and correctChoice() still describe the *submitted*
-     *   question), then generates a new question, then fires
-     *   onNewQuestion() (now describing the *new* question).
-     * - Calls to submitChoice() while a submission is already being
-     *   processed (eg. from inside a handler) are ignored, to avoid
-     *   recursive/duplicate submissions corrupting state.
+     *   question), then generates a new question.
+     * - onNewQuestion() runs after this function returns, so a handler can
+     *   open a dialog and submit the next answer. question()/choices()/
+     *   correctChoice() then describe the new question.
+     * - Calls to submitChoice() from inside onCorrect()/onIncorrect() are
+     *   ignored, so a handler cannot submit twice for one answer.
      * @param index the chosen answer's zero-based index, eg: 0
      */
     //% blockId=quiz_submit_choice block="submit choice %index"
@@ -377,9 +402,8 @@ namespace quiz {
         }
 
         currentQuestion = generateNewQuestion();
-        fireHandlers(newQuestionHandlers);
-
         submitting = false;
+        queueNewQuestion();
     }
 
     /**

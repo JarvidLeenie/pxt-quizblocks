@@ -106,9 +106,13 @@ i.e. `"56"`.
    `question`/`choices`/`correct choice index` still describe the
    **question that was just answered** - so a handler can, for example,
    show which choice was correct before moving on.
-4. Generate a new question.
-5. Fire every `on new question` handler. `question`/`choices`/
-   `correct choice index` now describe the **new** question.
+4. Generate a new question. `submit choice` then returns.
+5. Fire every `on new question` handler after that return (on the next
+   pause, about 1 ms later). `question`/`choices`/`correct choice index`
+   now describe the **new** question. The handler can open a dialog, such
+   as `show long text` or `ask for number`, and submit the next answer.
+   Opening that dialog from inside the submit that is still running freezes
+   the game.
 
 This ordering is implemented directly (handlers are called from plain
 arrays), not via MakeCode's generic event bus (`control.raiseEvent`/
