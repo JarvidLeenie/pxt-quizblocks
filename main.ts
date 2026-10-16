@@ -391,6 +391,8 @@ namespace quiz {
      * @param value the chosen answer, eg: 56
      */
     //% blockId=quiz_submit_answer block="submit answer %value"
+    //% value.shadow=text
+    //% value.defl="56"
     //% group="Answer" weight=29
     export function submitAnswer(value: any): void {
         if (submitting || value === undefined || value === null) {
