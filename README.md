@@ -32,9 +32,9 @@ A **QuizBlocks** category now appears in the toolbox.
 |---|---|
 | `question` | The current question's text, e.g. `"What is 7 x 8?"` |
 | `choices` | A **copy** of the current answer choices, as an array of strings |
-| `choice at index [0]` | One answer choice, by zero-based index |
+| `choice at index [0]` | One answer choice, by zero-based index. A whole number comes back as a number; anything else comes back as text |
 | `correct choice index` | The zero-based index of the correct answer within `choices` |
-| `answer` | The correct answer as text, e.g. `"56"` |
+| `answer` | The correct answer. A whole number comes back as a number, e.g. `56`. Anything else comes back as text |
 | `number of choices` | How many choices the current question has |
 
 `choices` returns a defensive copy: editing the array your code gets back
@@ -62,7 +62,7 @@ change the question text.
 | Block | Effect |
 |---|---|
 | `submit choice [0]` | Submits the player's answer by choice index |
-| `submit answer ["56"]` | Submits the player's answer by its text |
+| `submit answer [56]` | Submits the player's answer as a number or as text |
 
 `submit choice` takes a zero-based index into `choices`. **An out-of-range
 or non-integer index is silently ignored**: it does not count as an
@@ -71,7 +71,7 @@ question. This means a game can safely call `submit choice` with input it
 hasn't validated (e.g. an index read from sprite data) without accidentally
 corrupting quiz state.
 
-`submit answer` takes the choice text itself, for example `"56"`. It matches that text exactly against the current choices. A value that is not one of those choices is ignored the same way an invalid index is: it does not count as incorrect and does not advance the question.
+`submit answer` takes a number or text. Both are turned into text and matched against the current choices, so `56` and `"56"` submit the same choice. A value that is not one of those choices is ignored the same way an invalid index is: it does not count as incorrect and does not advance the question.
 
 If a `submit choice` or `submit answer` call happens while another one is still being
 processed (for example, a handler that itself calls `submit choice`), the

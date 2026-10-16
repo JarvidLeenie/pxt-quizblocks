@@ -80,8 +80,10 @@ for (let trial = 0; trial < 20; trial++) {
     const bStr = beforeQuestion.substr(bStart, qIndex - bStart);
     const a = parseInt(aStr);
     const b = parseInt(bStr);
-    assert(correctValue == (a * b).toString(), "choice(correctChoice()) equals a * b for '" + beforeQuestion + "'");
-    assert(quiz.answer() == (a * b).toString(), "answer() equals a * b for '" + beforeQuestion + "'");
+    assert(typeof correctValue == "number", "choice(correctChoice()) is a number for '" + beforeQuestion + "'");
+    assert(correctValue == a * b, "choice(correctChoice()) equals a * b for '" + beforeQuestion + "'");
+    assert(typeof quiz.answer() == "number", "answer() is a number for '" + beforeQuestion + "'");
+    assert(quiz.answer() == a * b, "answer() equals a * b for '" + beforeQuestion + "'");
 
     // advance via a harmless wrong submission so the next trial gets a fresh question
     const wrongIndex = correctIndex == 0 ? 1 : 0;
@@ -135,6 +137,14 @@ quiz.onNewQuestion(function () { newQuestionFired++; });
     assert(correctFired == 2, "submitAnswer of a wrong choice does not fire onCorrect");
     assert(incorrectFired == 2, "submitAnswer of a wrong choice fires onIncorrect");
     assert(newQuestionFired == before + 1, "submitAnswer of a wrong choice advances once");
+}
+
+{
+    const before = newQuestionFired;
+    const beforeCorrect = correctFired;
+    quiz.submitAnswer(quiz.answer().toString());
+    assert(correctFired == beforeCorrect + 1, "submitAnswer of the answer text matches the numeric answer");
+    assert(newQuestionFired == before + 1, "submitAnswer of the answer text advances once");
 }
 
 {

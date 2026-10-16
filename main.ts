@@ -236,29 +236,48 @@ namespace quiz {
         return currentQuestion.choices.slice();
     }
 
+    // Whole-number choice text comes back as a number so it can be displayed
+    // and used in math. Anything else stays text. "56" becomes 56; "blue" stays "blue".
+    // Only a canonical form counts, so "08" stays text and still matches "08" on submit.
+    function asAnswerValue(text: string): any {
+        const n = parseInt(text);
+        if (isNaN(n) || n.toString() !== text) {
+            return text;
+        }
+        return n;
+    }
+
+    function answerText(value: any): string {
+        if (value === undefined || value === null) {
+            return "";
+        }
+        return value.toString();
+    }
+
     /**
      * One answer choice from the current question.
+     * A whole-number choice is returned as a number. Any other choice is returned as text.
      * Returns an empty string if index is out of range.
      * @param index zero-based choice index, eg: 0
      */
     //% blockId=quiz_choice block="choice at index %index"
     //% index.defl=0
     //% group="Question" weight=80
-    export function choice(index: number): string {
+    export function choice(index: number): any {
         if (isInvalidIndex(index, currentQuestion.choices.length)) {
             return "";
         }
-        return currentQuestion.choices[index];
+        return asAnswerValue(currentQuestion.choices[index]);
     }
 
     /**
-     * The correct answer for the current question, as text.
-     * For a multiplication question this is the product, e.g. "56".
+     * The correct answer for the current question.
+     * A whole-number answer is returned as a number, e.g. 56. Any other answer is returned as text.
      */
     //% blockId=quiz_answer block="answer"
     //% group="Question" weight=75
-    export function answer(): string {
-        return currentQuestion.choices[currentQuestion.correctIndex];
+    export function answer(): any {
+        return asAnswerValue(currentQuestion.choices[currentQuestion.correctIndex]);
     }
 
     /**
@@ -362,21 +381,22 @@ namespace quiz {
     }
 
     /**
-     * Submits the player's answer as text, matched against the current choices.
+     * Submits the player's answer, as a number or as text.
      *
-     * A value that is not one of the current choices is ignored: it does not
-     * count as incorrect and does not advance the question. Matching is exact.
-     * A nested call made while a submission is already being processed is ignored.
-     * @param value the chosen answer, eg: "56"
+     * The value is turned into text and matched against the current choices,
+     * so 56 and "56" submit the same choice. A value that is not one of those
+     * choices is ignored: it does not count as incorrect and does not advance
+     * the question. A nested call made while a submission is already being
+     * processed is ignored.
+     * @param value the chosen answer, eg: 56
      */
     //% blockId=quiz_submit_answer block="submit answer %value"
-    //% value.defl="56"
     //% group="Answer" weight=29
-    export function submitAnswer(value: string): void {
-        if (submitting || value == null) {
+    export function submitAnswer(value: any): void {
+        if (submitting || value === undefined || value === null) {
             return;
         }
-        const index = currentQuestion.choices.indexOf(value);
+        const index = currentQuestion.choices.indexOf(answerText(value));
         if (index < 0) {
             return;
         }
