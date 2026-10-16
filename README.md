@@ -174,10 +174,14 @@ instructions.
 
 See [`examples/space-invaders`](./examples/space-invaders) for the full
 code. In short: create one enemy sprite per choice, label each with
-`sprite.sayText(choice)`, and remember its answer index on the sprite
-itself (`sprite.data["choiceIndex"] = i`). When a projectile overlaps an
-enemy, read that index back and call `quiz.submitChoice(index)`. Respawn
-enemies from `quiz.choices()` inside `onNewQuestion`. See the example's
+`sprite.sayText(choice)` (no `timeOnScreen` argument - passing `0` makes
+the label expire immediately), and remember its answer index on the
+sprite itself (`sprite.data["choiceIndex"] = i`). When a projectile
+overlaps an enemy, read that index back and call
+`quiz.submitChoice(index)`. Respawn enemies from `quiz.choices()` inside
+`onNewQuestion`. The question text itself isn't on any sprite, so draw it
+separately with `game.onPaint()`, the same every-frame technique used in
+the A/B quiz above. See the example's
 [README](./examples/space-invaders/README.md) for step-by-step import
 instructions.
 

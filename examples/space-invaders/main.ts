@@ -42,7 +42,10 @@ function spawnEnemies() {
     for (let i = 0; i < choices.length; i++) {
         const enemy = sprites.create(enemyImage, SpriteKind.Enemy)
         enemy.data["choiceIndex"] = i
-        enemy.setPosition(20 + i * 28, 20)
+        // y=40, not right at the top: sayText's speech bubble is drawn
+        // above the sprite, so it needs headroom to avoid clipping off
+        // the top of the screen.
+        enemy.setPosition(20 + i * 28, 40)
         // No timeOnScreen argument: passing 0 sets the bubble's expiry to
         // "now," so it disappears almost immediately. Omitting it leaves
         // the label on screen indefinitely, until the sprite is destroyed.
@@ -50,6 +53,13 @@ function spawnEnemies() {
         enemies.push(enemy)
     }
 }
+
+// The question text itself isn't on any sprite - it's drawn directly with
+// game.onPaint, which (like in the simple-quiz example) runs every frame
+// so the text survives the engine's own per-frame background redraw.
+game.onPaint(function () {
+    screen.print(quiz.question(), 4, 2, 1)
+})
 
 const ship = sprites.create(shipImage, SpriteKind.Player)
 ship.setPosition(80, 110)

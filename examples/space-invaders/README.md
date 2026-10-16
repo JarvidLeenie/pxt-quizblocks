@@ -34,3 +34,7 @@ also works for a completely different game design.
 - `quiz.onNewQuestion()` spawns the next wave of enemies. It's the same
   handler used for the very first wave and every wave after - no special
   "first time" setup code needed.
+- The question text itself isn't on a sprite, so it's drawn separately
+  with `game.onPaint()` (same technique as the simple-quiz example) -
+  reading `quiz.question()` fresh every frame so it survives the engine's
+  own per-frame background redraw.
