@@ -31,7 +31,7 @@ A **QuizBlocks** category now appears in the toolbox.
 | Block | Returns |
 |---|---|
 | `question` | The current question's text, e.g. `"What is 7 x 8?"` |
-| `choices` | A **copy** of the current answer choices, as an array of strings |
+| `choices` | TypeScript only. A **copy** of the current answer choices, as an array of strings. Not shown in the blocks drawer |
 | `choice at index [0]` | One answer choice, by zero-based index. A whole number comes back as a number; anything else comes back as text |
 | `correct choice index` | The zero-based index of the correct answer within `choices` |
 | `answer` | The correct answer. A whole number comes back as a number, e.g. `56`. Anything else comes back as text |

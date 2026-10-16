@@ -230,8 +230,10 @@ namespace quiz {
      * The current question's answer choices, in display order.
      * Returns a copy, so changing the result does not affect QuizBlocks.
      */
-    //% blockId=quiz_choices block="choices"
-    //% group="Question" weight=90
+    // Array reporters do not lay out in the MakeCode drawer; they collapse
+    // the category. TypeScript can still call choices(). Blocks use choice at index.
+    //% blockId=quiz_choices
+    //% blockHidden=true
     export function choices(): string[] {
         return currentQuestion.choices.slice();
     }
@@ -239,7 +241,7 @@ namespace quiz {
     // Whole-number choice text comes back as a number so it can be displayed
     // and used in math. Anything else stays text. "56" becomes 56; "blue" stays "blue".
     // Only a canonical form counts, so "08" stays text and still matches "08" on submit.
-    function asAnswerValue(text: string): any {
+    function asAnswerValue(text: string): number | string {
         const n = parseInt(text);
         if (isNaN(n) || n.toString() !== text) {
             return text;
@@ -263,7 +265,7 @@ namespace quiz {
     //% blockId=quiz_choice block="choice at index %index"
     //% index.defl=0
     //% group="Question" weight=80
-    export function choice(index: number): any {
+    export function choice(index: number): number | string {
         if (isInvalidIndex(index, currentQuestion.choices.length)) {
             return "";
         }
@@ -276,7 +278,7 @@ namespace quiz {
      */
     //% blockId=quiz_answer block="answer"
     //% group="Question" weight=75
-    export function answer(): any {
+    export function answer(): number | string {
         return asAnswerValue(currentQuestion.choices[currentQuestion.correctIndex]);
     }
 
