@@ -80,10 +80,8 @@ for (let trial = 0; trial < 20; trial++) {
     const bStr = beforeQuestion.substr(bStart, qIndex - bStart);
     const a = parseInt(aStr);
     const b = parseInt(bStr);
-    assert(typeof correctValue == "number", "choice(correctChoice()) is a number for '" + beforeQuestion + "'");
-    assert(correctValue == a * b, "choice(correctChoice()) equals a * b for '" + beforeQuestion + "'");
-    assert(typeof quiz.answer() == "number", "answer() is a number for '" + beforeQuestion + "'");
-    assert(quiz.answer() == a * b, "answer() equals a * b for '" + beforeQuestion + "'");
+    assert(correctValue == (a * b).toString(), "choice(correctChoice()) equals a * b for '" + beforeQuestion + "'");
+    assert(quiz.answer() == (a * b).toString(), "answer() equals a * b for '" + beforeQuestion + "'");
 
     // advance via a harmless wrong submission so the next trial gets a fresh question
     const wrongIndex = correctIndex == 0 ? 1 : 0;
