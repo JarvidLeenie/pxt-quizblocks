@@ -28,6 +28,7 @@ assertInRange(quiz.correctChoice(), 0, 3, "default correctChoice() is in range")
 
 // choice(correctChoice()) matches the value returned by choices()
 assert(quiz.choice(quiz.correctChoice()) == quiz.choices()[quiz.correctChoice()], "choice(i) matches choices()[i]");
+assert(quiz.answer() == quiz.choice(quiz.correctChoice()), "answer() is the correct choice text");
 
 // --- Choice-count configuration, from 2 through 6 ---
 
@@ -80,6 +81,7 @@ for (let trial = 0; trial < 20; trial++) {
     const a = parseInt(aStr);
     const b = parseInt(bStr);
     assert(correctValue == (a * b).toString(), "choice(correctChoice()) equals a * b for '" + beforeQuestion + "'");
+    assert(quiz.answer() == (a * b).toString(), "answer() equals a * b for '" + beforeQuestion + "'");
 
     // advance via a harmless wrong submission so the next trial gets a fresh question
     const wrongIndex = correctIndex == 0 ? 1 : 0;
@@ -113,6 +115,39 @@ quiz.onNewQuestion(function () { newQuestionFired++; });
     assert(correctFired == 1, "submitting a wrong index does not fire onCorrect");
     assert(incorrectFired == 1, "submitting a wrong index fires onIncorrect exactly once");
     assert(newQuestionFired == before + 1, "an incorrect submission still advances to a new question exactly once");
+}
+
+// --- submitAnswer matches choice text and ignores unknown values ---
+
+{
+    const before = newQuestionFired;
+    const correctText = quiz.answer();
+    quiz.submitAnswer(correctText);
+    assert(correctFired == 2, "submitAnswer of the correct text fires onCorrect");
+    assert(incorrectFired == 1, "submitAnswer of the correct text does not fire onIncorrect");
+    assert(newQuestionFired == before + 1, "submitAnswer of the correct text advances once");
+}
+
+{
+    const before = newQuestionFired;
+    const wrongText = quiz.choice(quiz.correctChoice() == 0 ? 1 : 0);
+    quiz.submitAnswer(wrongText);
+    assert(correctFired == 2, "submitAnswer of a wrong choice does not fire onCorrect");
+    assert(incorrectFired == 2, "submitAnswer of a wrong choice fires onIncorrect");
+    assert(newQuestionFired == before + 1, "submitAnswer of a wrong choice advances once");
+}
+
+{
+    const beforeQuestion = quiz.question();
+    const beforeCorrect = correctFired;
+    const beforeIncorrect = incorrectFired;
+    const beforeNew = newQuestionFired;
+    quiz.submitAnswer("not-a-choice");
+    quiz.submitAnswer("");
+    assert(quiz.question() == beforeQuestion, "unknown submitAnswer does not change the question");
+    assert(correctFired == beforeCorrect, "unknown submitAnswer does not fire onCorrect");
+    assert(incorrectFired == beforeIncorrect, "unknown submitAnswer does not fire onIncorrect");
+    assert(newQuestionFired == beforeNew, "unknown submitAnswer does not advance");
 }
 
 // --- Invalid indexes are handled safely and do not advance the question ---

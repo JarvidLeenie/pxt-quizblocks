@@ -34,6 +34,7 @@ A **QuizBlocks** category now appears in the toolbox.
 | `choices` | A **copy** of the current answer choices, as an array of strings |
 | `choice at index [0]` | One answer choice, by zero-based index |
 | `correct choice index` | The zero-based index of the correct answer within `choices` |
+| `answer` | The correct answer as text, e.g. `"56"` |
 | `number of choices` | How many choices the current question has |
 
 `choices` returns a defensive copy: editing the array your code gets back
@@ -60,7 +61,8 @@ change the question text.
 
 | Block | Effect |
 |---|---|
-| `submit choice [0]` | Submits the player's answer |
+| `submit choice [0]` | Submits the player's answer by choice index |
+| `submit answer ["56"]` | Submits the player's answer by its text |
 
 `submit choice` takes a zero-based index into `choices`. **An out-of-range
 or non-integer index is silently ignored**: it does not count as an
@@ -69,7 +71,9 @@ question. This means a game can safely call `submit choice` with input it
 hasn't validated (e.g. an index read from sprite data) without accidentally
 corrupting quiz state.
 
-If a `submit choice` call happens while another one is still being
+`submit answer` takes the choice text itself, for example `"56"`. It matches that text exactly against the current choices. A value that is not one of those choices is ignored the same way an invalid index is: it does not count as incorrect and does not advance the question.
+
+If a `submit choice` or `submit answer` call happens while another one is still being
 processed (for example, a handler that itself calls `submit choice`), the
 nested call is ignored. This keeps state consistent even if game code
 accidentally re-enters submission.

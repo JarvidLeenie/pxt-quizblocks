@@ -252,6 +252,16 @@ namespace quiz {
     }
 
     /**
+     * The correct answer for the current question, as text.
+     * For a multiplication question this is the product, e.g. "56".
+     */
+    //% blockId=quiz_answer block="answer"
+    //% group="Question" weight=75
+    export function answer(): string {
+        return currentQuestion.choices[currentQuestion.correctIndex];
+    }
+
+    /**
      * The zero-based index of the correct answer among choices().
      */
     //% blockId=quiz_correct_choice block="correct choice index"
@@ -349,6 +359,28 @@ namespace quiz {
         fireHandlers(newQuestionHandlers);
 
         submitting = false;
+    }
+
+    /**
+     * Submits the player's answer as text, matched against the current choices.
+     *
+     * A value that is not one of the current choices is ignored: it does not
+     * count as incorrect and does not advance the question. Matching is exact.
+     * A nested call made while a submission is already being processed is ignored.
+     * @param value the chosen answer, eg: "56"
+     */
+    //% blockId=quiz_submit_answer block="submit answer %value"
+    //% value.defl="56"
+    //% group="Answer" weight=29
+    export function submitAnswer(value: string): void {
+        if (submitting || value == null) {
+            return;
+        }
+        const index = currentQuestion.choices.indexOf(value);
+        if (index < 0) {
+            return;
+        }
+        submitChoice(index);
     }
 
     /**
